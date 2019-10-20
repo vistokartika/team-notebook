@@ -1,4 +1,4 @@
-// A C program to implement Manacher’s Algorithm 
+// A C program to implement Manacherâ€™s Algorithm 
 #include <stdio.h> 
 #include <string.h> 
   
