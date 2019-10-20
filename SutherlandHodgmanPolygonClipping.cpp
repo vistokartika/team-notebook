@@ -1,4 +1,4 @@
-// C++ program for implementing Sutherland–Hodgman 
+// C++ program for implementing Sutherlandâ€“Hodgman 
 // algorithm for polygon clipping 
 #include <bits/stdc++.h>
 
