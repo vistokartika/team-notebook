@@ -1,16 +1,7 @@
-#include <iostream>
-#include <math.h>
-using namespace std;
-
 int n;
 double x[1005], y[1005], X, Y, d, e;
-
-double dist(double a, double b) {
-	return a*a + b*b;
-}
-
-int main() {
-	
+double dist(double a, double b) { return a*a + b*b; }
+int main() {	
 	cin >> n;
 	for (int i = 0; i < n; i++) {
 		cin >> x[i] >> y[i];
