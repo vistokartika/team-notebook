@@ -1,7 +1,3 @@
-// A C program to implement Manacher’s Algorithm 
-#include <stdio.h> 
-#include <string.h> 
-  
 char text[100]; 
 int min(int a, int b) 
 { 
@@ -10,7 +6,6 @@ int min(int a, int b)
         res = b; 
     return res; 
 } 
-  
 void findLongestPalindromicString() 
 { 
     int N = strlen(text); 
@@ -29,11 +24,9 @@ void findLongestPalindromicString()
     int start = -1; 
     int end = -1; 
     int diff = -1; 
-      
     //Uncomment it to print LPS Length array 
     //printf("%d %d ", L[0], L[1]); 
-    for (i = 2; i < N; i++)  
-    { 
+    for (i = 2; i < N; i++) { 
         //get currentLeftPosition iMirror for currentRightPosition i 
         iMirror  = 2*C-i; 
         L[i] = 0; 
@@ -41,25 +34,21 @@ void findLongestPalindromicString()
         //If currentRightPosition i is within centerRightPosition R 
         if(diff > 0) 
             L[i] = min(L[iMirror], diff); 
-  
         //Attempt to expand palindrome centered at currentRightPosition i 
         //Here for odd positions, we compare characters and  
         //if match then increment LPS Length by ONE 
-        //If even position, we just increment LPS by ONE without  
-        //any character comparison 
+        //If even position, we just increment LPS by ONE without any character comparison 
         while ( ((i + L[i]) < N && (i - L[i]) > 0) &&  
             ( ((i + L[i] + 1) % 2 == 0) ||  
             (text[(i + L[i] + 1)/2] == text[(i - L[i] - 1)/2] ))) 
         { 
             L[i]++; 
         } 
-  
         if(L[i] > maxLPSLength)  // Track maxLPSLength 
         { 
             maxLPSLength = L[i]; 
             maxLPSCenterPosition = i; 
         } 
-  
         //If palindrome centered at currentRightPosition i  
         //expand beyond centerRightPosition R, 
         //adjust centerPosition C based on expanded palindrome. 
@@ -79,36 +68,8 @@ void findLongestPalindromicString()
         printf("%c", text[i]); 
     printf("\n"); 
 } 
-  
 int main(int argc, char *argv[]) 
 { 
-  
     strcpy(text, "babcbabcbaccba"); 
     findLongestPalindromicString(); 
-  
-    strcpy(text, "abaaba"); 
-    findLongestPalindromicString(); 
-  
-    strcpy(text, "abababa"); 
-    findLongestPalindromicString(); 
-  
-    strcpy(text, "abcbabcbabcba"); 
-    findLongestPalindromicString(); 
-  
-    strcpy(text, "forgeeksskeegfor"); 
-    findLongestPalindromicString(); 
-  
-    strcpy(text, "caba"); 
-    findLongestPalindromicString(); 
-  
-    strcpy(text, "abacdfgdcaba"); 
-    findLongestPalindromicString(); 
-  
-    strcpy(text, "abacdfgdcabba"); 
-    findLongestPalindromicString(); 
-  
-    strcpy(text, "abacdedcaba"); 
-    findLongestPalindromicString(); 
-  
-    return 0; 
 } 
