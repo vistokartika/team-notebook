@@ -1,157 +1,91 @@
-#define P(p) const point &p
-#define L(p0, p1) P(p0), P(p1)
-#define C(p0, r) P(p0), double r
-#define PP(pp) pair<point,point> &pp
-typedef complex<double> point;
-double dot(P(a), P(b)) { return real(conj(a) * b); }
-double cross(P(a), P(b)) { return imag(conj(a) * b); }
-point rotate(P(p), double radians = pi / 2,
-             P(about) = point(0,0)) {
-  return (p - about) * exp(point(0, radians)) + about; }
-point reflect(P(p), L(about1, about2)) {
-  point z = p - about1, w = about2 - about1;
-  return conj(z / w) * w + about1; }
-point proj(P(u), P(v)) { return dot(u, v) / dot(u, u) * u; }
-point normalize(P(p), double k = 1.0) {
-  return abs(p) == 0 ? point(0,0) : p / abs(p) * k; }
-double ccw(P(a), P(b), P(c)) { return cross(b - a, c - b); }
-bool collinear(P(a), P(b), P(c)) {
-  return abs(ccw(a, b, c)) < EPS; }
-double angle(P(a), P(b), P(c)) {
-  return acos(dot(b - a, c - b) / abs(b - a) / abs(c - b)); }
-double signed_angle(P(a), P(b), P(c)) {
-  return asin(cross(b - a, c - b) / abs(b - a) / abs(c - b)); }
-double angle(P(p)) { return atan2(imag(p), real(p)); }
-point perp(P(p)) { return point(-imag(p), real(p)); }
-double progress(P(p), L(a, b)) {
-  if (abs(real(a) - real(b)) < EPS)
-    return (imag(p) - imag(a)) / (imag(b) - imag(a));
-  else return (real(p) - real(a)) / (real(b) - real(a)); }
-// vim: cc=60 ts=2 sts=2 sw=2:
-
-bool collinear(L(a, b), L(p, q)) {
-  return abs(ccw(a, b, p)) < EPS && abs(ccw(a, b, q)) < EPS; }
-bool parallel(L(a, b), L(p, q)) {
-  return abs(cross(b - a, q - p)) < EPS; }
-point closest_point(L(a, b), P(c), bool segment = false) {
-  if (segment) {
-    if (dot(b - a, c - b) > 0) return b;
-    if (dot(a - b, c - a) > 0) return a;
+#include<vector>
+#include<algorithm>
+#include<math.h>
+using namespace std;
+typedef double TD;                // for precision shits
+namespace GEOM {
+  typedef pair<TD,TD> Pt;         // vector and points
+  const TD EPS = 1e-9;
+  const TD maxD = 1e9;
+  TD cross(Pt a, Pt b, Pt c) {    // right hand rule
+    TD v1 = a.first - c.first;    // (a-c) X (b-c)
+    TD v2 = a.second - c.second;
+    TD u1 = b.first - c.first;
+    TD u2 = b.second - c.second;
+    return v1 * u2 - v2 * u1;
   }
-  double t = dot(c - a, b - a) / norm(b - a);
-  return a + t * (b - a); }
-double line_segment_distance(L(a,b), L(c,d)) {
-  double x = INFINITY;
-  if (abs(a - b) < EPS && abs(c - d) < EPS) x = abs(a - c);
-  else if (abs(a - b) < EPS)
-    x = abs(a - closest_point(c, d, a, true));
-  else if (abs(c - d) < EPS)
-    x = abs(c - closest_point(a, b, c, true));
-  else if ((ccw(a, b, c) < 0) != (ccw(a, b, d) < 0) &&
-       (ccw(c, d, a) < 0) != (ccw(c, d, b) < 0)) x = 0;
-  else {
-    x = min(x, abs(a - closest_point(c,d, a, true)));
-    x = min(x, abs(b - closest_point(c,d, b, true)));
-    x = min(x, abs(c - closest_point(a,b, c, true)));
-    x = min(x, abs(d - closest_point(a,b, d, true)));
+  TD cross(Pt a, Pt b) {          // a X b
+    return a.first*b.second - a.second*b.first;
   }
-  return x; }
-bool intersect(L(a,b), L(p,q), point &res,
-    bool lseg=false, bool rseg=false) {
-  // NOTE: check parallel/collinear before
-  point r = b - a, s = q - p;
-  double c = cross(r, s),
-         t = cross(p - a, s) / c, u = cross(p - a, r) / c;
-  if (lseg && (t < 0-EPS || t > 1+EPS)) return false;
-  if (rseg && (u < 0-EPS || u > 1+EPS)) return false;
-  res = a + t * r; return true; }
-// vim: cc=60 ts=2 sts=2 sw=2:
-
-struct caliper {
-  ii pt;
-  double angle;
-  caliper(ii _pt, double _angle) : pt(_pt), angle(_angle) { }
-  double angle_to(ii pt2) {
-    double x = angle - atan2(pt2.second - pt.second,
-                             pt2.first - pt.first);
-    while (x >= pi) x -= 2*pi;
-    while (x <= -pi) x += 2*pi;
-    return x; }
-  void rotate(double by) {
-    angle -= by;
-    while (angle < 0) angle += 2*pi; }
-  void move_to(ii pt2) { pt = pt2; }
-  double dist(const caliper &other) {
-    point a(pt.first,pt.second),
-       b = a + exp(point(0,angle)) * 10.0,
-       c(other.pt.first, other.pt.second);
-    return abs(c - closest_point(a, b, c)); } };
-// int h = convex_hull(pts);
-// double mx = 0;
-// if (h > 1) {
-//     int a = 0,
-//         b = 0;
-//     rep(i,0,h) {
-//         if (hull[i].first < hull[a].first)
-//             a = i;
-//         if (hull[i].first > hull[b].first)
-//             b = i; }
-//     caliper A(hull[a], pi/2), B(hull[b], 3*pi/2);
-//     double done = 0;
-//     while (true) {
-//         mx = max(mx, abs(point(hull[a].first,hull[a].second)
-//                     - point(hull[b].first,hull[b].second)));
-//         double tha = A.angle_to(hull[(a+1)%h]),
-//                 thb = B.angle_to(hull[(b+1)%h]);
-//         if (tha <= thb) {
-//             A.rotate(tha);
-//             B.rotate(tha);
-//             a = (a+1) % h;
-//             A.move_to(hull[a]);
-//         } else {
-//             A.rotate(thb);
-//             B.rotate(thb);
-//             b = (b+1) % h;
-//             B.move_to(hull[b]); }
-//         done += min(tha, thb);
-//         if (done > pi) {
-//             break;
-//         } } }
-// vim: cc=60 ts=2 sts=2 sw=2:
-
-//Below is Rotating Calipers Monochain's Algorithm - Wikipedia
-
-///* All indices starts from 1.		  
-//   dir(p,q,r) returns +ve number if p-q-r segments are clockwise,
-//     -ve number if they are anti clockwise and 0 if collinear.
-//     it can be defined as (q.y-p.y)(r.x-p.x) - (q.x-p.x)(r.y-p.y)
-//*/     
-//GetAllAntiPodalPairs(p[1..n])
-//  //Obtain upper and lower parts of polygon
-//  p’ = Sort p lexicographically (i.e. first by x then by y)
-//  U, L = create new stacks of points
-//  for k = 1 to n
-//    while U.size > 1 and dir(U[U.size-1], U[U.size], p’[k]) <= 0
-//      U.pop()
-//    while L.size > 1 and dir(L(L.size-1], L[L.size], p’[k]) >= 0
-//      L.pop()
-//    U.append(p’[k])
-//    L.append(p’[k])
-//	
-//  //Now we have U and L, apply rotating calipers
-//  i = 1
-//  j = L.size
-//  while i < U.size or j > 1
-//    yield U[i], L[j]
-//	
-//    //if i or j made it all the way through
-//    //advance other size
-//    if i = U.size
-//      j = j - 1
-//    else if j = 1
-//      i = i + 1
-//    else if (U[i+1].y - U[i].y) * (L[j].x - L[j-1].x)
-//         > (U[i+1].x - U[i].x) * (L[j].y - L[j-1].y)
-//      i = i + 1
-//    else
-//      j = j - 1
+  TD dot(Pt a, Pt b, Pt c) {      // (a-c) . (b-c)
+    TD v1 = a.first - c.first;
+    TD v2 = a.second - c.second;
+    TD u1 = b.first - c.first;
+    TD u2 = b.second - c.second;
+    return v1 * u1 + v2 * u2;
+  }
+  TD dot(Pt a, Pt b) {            // a . b
+    return a.first*b.first + a.second*b.second;
+  }
+  TD dist(Pt a, Pt b) {
+    return sqrt((a.first-b.first)*(a.first-b.first) + (a.second-b.second)*(a.second-b.second));
+  }
+  TD shoelaceX2(vector<Pt> &convHull) {
+    TD ret = 0;
+    for (int i = 0, n = convHull.size(); i < n; i++)
+      ret += cross(convHull[i], convHull[(i+1)%n]);
+    return ret;
+  }
+  vector<Pt> createConvexHull(vector<Pt> &points) {
+    sort(points.begin(), points.end());
+    vector<Pt> ret;
+    for (int i = 0; i < points.size(); i++) {
+      while (ret.size() > 1 &&
+        cross(points[i], ret[ret.size()-1], ret[ret.size()-2]) < -EPS)
+        ret.pop_back();
+      ret.push_back(points[i]);
+    }
+    for (int i = points.size() - 2, sz = ret.size(); i >= 0; i--) {
+      while (ret.size() > sz &&
+        cross(points[i], ret[ret.size()-1], ret[ret.size()-2]) < -EPS)
+        ret.pop_back();
+      if (i == 0) break;
+      ret.push_back(points[i]);
+    }
+    return ret;
+  }
+  // set mod=0 to calculate furthest point
+  // set mod=1 to calculate minimum calipers
+  // set mod=2 to minimum bounding rectangle
+  // return (antipodal, distance)
+  vector<pair<int,TD> > rotateCalipers(const vector<Pt> &Pts, int mod = 0) {
+    int ptr = 0, upd = 0, P1 = 0, P2 = 0;
+    vector<pair<int,TD> > ret;
+    for (int i = 0, n = Pts.size(); i < n; i++, upd = ptr) {
+      TD d = -1, d1 = -1, d2 = maxD, tmp, l = dist(Pts[i],Pts[(i+1)%n]);
+      for (int j = 0; j < n; j++, upd = (upd + 1) % n) {
+        if (mod == 0 && d <= ( tmp = dist(Pts[i],Pts[upd]) ) + EPS) {
+          d = tmp;
+        } else if (mod && d <= ( tmp = fabs(cross(Pts[upd],Pts[(i+1)%n],Pts[i]))/l ) + EPS) {
+          d = tmp;
+        } else {
+          break;
+        }
+      }
+      ptr = (upd - 1 + n) % n;
+      if (mod == 2) {
+        while (d1 <= ( tmp = dot(Pts[P1],Pts[(i+1)%n],Pts[i])/l ) + EPS)
+          d1 = tmp, P1 = (P1 + 1) % n;
+        P1 = (P1 - 1 + n) % n;
+        if (i == 0) P2 = P1;
+        while (d2 >= ( tmp = dot(Pts[P2],Pts[(i+1)%n],Pts[i])/l ) - EPS)
+          d2 = tmp, P2 = (P2 + 1) % n;
+        P2 = (P2 - 1 + n) % n;
+        d = (d + (d1 - d2)) * 2;    // untuk keliling
+        // d = (d * (d1 - d2));        // untuk luas
+      }
+      ret.push_back(pair<int,TD>(ptr, d));
+    }
+    return ret;
+  }
+}
