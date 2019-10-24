@@ -50,28 +50,23 @@ int buildMatchingMachine(string arr[], int k) {
 // Failure function is computed in breadth first order using a queue 
     queue<int> q; 
 // Iterate over every possible input 
-    for (int ch = 0; ch < MAXC; ++ch) 
-    { 
+    for (int ch = 0; ch < MAXC; ++ch) { 
         // All nodes of depth 1 have failure function value nas 0. 
         //For example, in above diagram we move to 0 from states 1 and 3. 
-        if (g[0][ch] != 0) 
-        { 
+        if (g[0][ch] != 0) { 
             f[g[0][ch]] = 0; q.push(g[0][ch]); 
         } 
     } 
 // Now queue has states 1 and 3 
-    while (q.size()) 
-    { 
+    while (q.size()) { 
 //Remove the front state from queue 
         int state = q.front(); 
         q.pop(); 
   
 // For the removed state, find failure function for all those characters for which goto function is not defined. 
-        for (int ch = 0; ch <= MAXC; ++ch) 
-        { 
+        for (int ch = 0; ch <= MAXC; ++ch) { 
             // If goto function is defined for character 'ch' and 'state' 
-            if (g[state][ch] != -1) 
-            { 
+            if (g[state][ch] != -1) { 
 //Find failure state of removed state 
                 int failure = f[state]; 
   
@@ -89,12 +84,10 @@ int buildMatchingMachine(string arr[], int k) {
     } 
     return states; 
 } 
-  
 // Returns the next state the machine will transition to using goto and failure functions. 
 // currentState - The current state of the machine. Must be between 0 and the number of states - 1, inclusive. 
 // nextInput - The next character that enters into the machine. 
-int findNextState(int currentState, char nextInput) 
-{ 
+int findNextState(int currentState, char nextInput) { 
     int answer = currentState; 
     int ch = nextInput - 'a'; 
     // If goto is not defined, use failure function 
@@ -103,8 +96,7 @@ int findNextState(int currentState, char nextInput)
     return g[answer][ch]; 
 } 
 // This function finds all occurrences of all array words in text. 
-void searchWords(string arr[], int k, string text) 
-{ 
+void searchWords(string arr[], int k, string text) { 
     // Preprocess patterns. 
     // Build machine with goto, failure and output functions 
     buildMatchingMachine(arr, k); 
@@ -131,8 +123,7 @@ void searchWords(string arr[], int k, string text)
         } 
     } 
 } 
-int main() 
-{ 
+int main() { 
     string arr[] = {"he", "she", "hers", "his"}; 
     string text = "ahishers"; 
     int k = sizeof(arr)/sizeof(arr[0]); 
