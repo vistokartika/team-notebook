@@ -1,7 +1,6 @@
-int n;
 ll dua[30]; vi adj[100010];
 bool vis[100010],vist[100010];
-int q,depth[100010],parent[100010][30];
+int n,q,depth[100010],parent[100010][30];
 void build_parent(){
 	queue <int> q; q.push(1);
 	while(!q.empty()){
