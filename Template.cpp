@@ -59,11 +59,6 @@ ll quickpow (ll num1, ll num2, ll MOD){
     }
 }
 ll invmod (ll num, ll MOD){return quickpow (num,MOD-2,MOD);}
-ll gcd (ll num1, ll num2){
-    if(num1 < num2) swap(num1,num2); ll num3 = num1 % num2 ;
-    while(num3 > 0){ num1 = num2; num2 = num3; num3 = num1 % num2;}
-    return num2;
-}
 ll lcm (ll num1 , ll num2){return (ll) (num1/__gcd(num1,num2))*num2;}
 // end of Template
 
