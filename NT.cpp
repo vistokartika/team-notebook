@@ -68,10 +68,8 @@ bool linear_diophantine(int a, int b, int c, int &x, int &y) {
 }
 // Returns nCr % p. In this Lucas Theorem based program, 
 // this function is only called for n < p and r < p. 
-int nCrModpDP(int n, int r, int p) 
-{ 
-    int C[r+1]; 
-    memset(C, 0, sizeof(C)); 
+int nCrModpDP(int n, int r, int p) { 
+    int C[r+1];  memset(C, 0, sizeof(C)); 
     C[0] = 1;
     for (int i = 1; i <= n; i++) {
         for (int j = min(i, r); j > 0; j--) 
@@ -83,8 +81,7 @@ int nCrModpDP(int n, int r, int p)
 // This function works like decimal to binary conversion 
 // recursive function. First we compute last digits of 
 // n and r in base p, then recur for remaining digits 
-int nCrModpLucas(int n, int r, int p) 
-{ 
+int nCrModpLucas(int n, int r, int p) { 
    if (r==0) 
       return 1; 
    int ni = n%p, ri = r%p; 
