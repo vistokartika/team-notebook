@@ -1,7 +1,3 @@
-#include<vector>
-#include<algorithm>
-#include<math.h>
-using namespace std;
 typedef double TD;                // for precision shits
 namespace GEOM {
   typedef pair<TD,TD> Pt;         // vector and points
