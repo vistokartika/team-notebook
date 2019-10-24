@@ -1,5 +1,4 @@
-int n;
-double x[1005], y[1005], X, Y, d, e;
+int n; double x[1005], y[1005], X, Y, d, e;
 double dist(double a, double b) { return a*a + b*b; }
 int main() {	
 	cin >> n;
