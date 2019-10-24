@@ -4,12 +4,6 @@
 using namespace __gnu_pbds;
 using namespace std;
 
-#pragma GCC target ("avx2")
-#pragma GCC optimization ("O3")
-#pragma GCC optimization ("unroll-loops")
-#pragma comment(linker, "/stack:200000000")
-#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
-
 #define ordered_set tree<int, null_type,less<int>, rb_tree_tag,tree_order_statistics_node_update>
 #define fbo find_by_order
 #define ook order_of_key
@@ -22,24 +16,6 @@ typedef vector<int> vi;
 typedef vector<ll> vll;
 typedef vector <pii> vpii;
 typedef vector <pll> vpll;
-typedef map <str,int> mapsi;
-typedef map <str,int> :: iterator mapsitr;
-typedef map <int , int> mint;
-typedef map <ll , ll> mll;
-typedef set <int> si;
-typedef set <ll> sll;
-typedef si :: iterator sitr;
-typedef si :: reverse_iterator rsitr;
-typedef sll :: iterator sltr;
-typedef sll :: reverse_iterator rsltr;
-#define mset multiset
- 
-typedef mset <int> msi;
-typedef mset <ll> msll;
-typedef msi :: iterator msitr;
-typedef msi :: reverse_iterator msritr;
-typedef msll :: iterator msltr;
-typedef msll :: reverse_iterator mslritr;
  
 #define mp make_pair
 #define pb push_back
