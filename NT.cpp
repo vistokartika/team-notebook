@@ -1,39 +1,5 @@
-#include <bits/stdc++.h>
-
-using namespace std;
-
 typedef vector<int> VI;
 typedef pair<int, int> PII;
-
-// return a % b (positive value)
-int mod(int a, int b) {
-	return ((a%b) + b) % b;
-}
-
-// computes gcd(a,b)
-int gcd(int a, int b) {
-	while (b) { int t = a%b; a = b; b = t; }
-	return a;
-}
-
-// computes lcm(a,b)
-int lcm(int a, int b) {
-	return a / gcd(a, b)*b;
-}
-
-// (a^b) mod m via successive squaring
-int powermod(int a, int b, int m)
-{
-	int ret = 1;
-	while (b)
-	{
-		if (b & 1) ret = mod(ret*a, m);
-		a = mod(a*a, m);
-		b >>= 1;
-	}
-	return ret;
-}
-
 // returns g = gcd(a, b); finds x, y such that d = ax + by
 int extended_euclid(int a, int b, int &x, int &y) {
 	int xx = y = 0;
@@ -46,38 +12,24 @@ int extended_euclid(int a, int b, int &x, int &y) {
 	}
 	return a;
 }
-
 // finds all solutions to ax = b (mod n)
 VI modular_linear_equation_solver(int a, int b, int n) {
-	int x, y;
-	VI ret;
-	int g = extended_euclid(a, n, x, y);
+	int x, y; VI ret; int g = extended_euclid(a, n, x, y);
 	if (!(b%g)) {
 		x = mod(x*(b / g), n);
 		for (int i = 0; i < g; i++)
-			ret.push_back(mod(x + i*(n / g), n));
+		ret.push_back(mod(x + i*(n / g), n));
 	}
 	return ret;
 }
-
-// computes b such that ab = 1 (mod n), returns -1 on failure
-int mod_inverse(int a, int n) {
-	int x, y;
-	int g = extended_euclid(a, n, x, y);
-	if (g > 1) return -1;
-	return mod(x, n);
-}
-
 // Chinese remainder theorem (special case): find z such that
 // z % m1 = r1, z % m2 = r2.  Here, z is unique modulo M = lcm(m1, m2).
 // Return (z, M).  On failure, M = -1.
 PII chinese_remainder_theorem(int m1, int r1, int m2, int r2) {
-	int s, t;
-	int g = extended_euclid(m1, m2, s, t);
+	int s, t; int g = extended_euclid(m1, m2, s, t);
 	if (r1%g != r2%g) return make_pair(0, -1);
 	return make_pair(mod(s*r2*m1 + t*r1*m2, m1*m2) / g, m1*m2 / g);
 }
-
 // Chinese remainder theorem: find z such that
 // z % m[i] = r[i] for all i.  Note that the solution is
 // unique modulo M = lcm_i (m[i]).  Return (z, M). On 
@@ -91,24 +43,19 @@ PII chinese_remainder_theorem(const VI &m, const VI &r) {
 	}
 	return ret;
 }
-
 // computes x and y such that ax + by = c
 // returns whether the solution exists
 bool linear_diophantine(int a, int b, int c, int &x, int &y) {
-	if (!a && !b)
-	{
+	if (!a && !b){
 		if (c) return false;
-		x = 0; y = 0;
+		x = y = 0;
 		return true;
 	}
-	if (!a)
-	{
+	if (!a){
 		if (c % b) return false;
-		x = 0; y = c / b;
-		return true;
+		x = 0; y = c / b; return true;
 	}
-	if (!b)
-	{
+	if (!b){
 		if (c % a) return false;
 		x = c / a; y = 0;
 		return true;
@@ -119,23 +66,19 @@ bool linear_diophantine(int a, int b, int c, int &x, int &y) {
 	y = (c - a*x) / b;
 	return true;
 }
-
 // Returns nCr % p. In this Lucas Theorem based program, 
 // this function is only called for n < p and r < p. 
 int nCrModpDP(int n, int r, int p) 
 { 
     int C[r+1]; 
     memset(C, 0, sizeof(C)); 
-  
     C[0] = 1;
-    for (int i = 1; i <= n; i++) 
-    {
+    for (int i = 1; i <= n; i++) {
         for (int j = min(i, r); j > 0; j--) 
             C[j] = (C[j] + C[j-1])%p; 
     } 
     return C[r]; 
 } 
-  
 // Lucas Theorem based function that returns nCr % p 
 // This function works like decimal to binary conversion 
 // recursive function. First we compute last digits of 
@@ -147,95 +90,40 @@ int nCrModpLucas(int n, int r, int p)
    int ni = n%p, ri = r%p; 
    return (nCrModpLucas(n/p, r/p, p) * nCrModpDP(ni, ri, p)) % p;
 } 
-
-//Sieve of Eratosthenes
-void SieveOfEratosthenes(int n) 
-{ 
-    // Create a boolean array "prime[0..n]" and initialize 
-    // all entries it as true. A value in prime[i] will 
-    // finally be false if i is Not a prime, else true. 
-    bool prime[n+1]; 
-    memset(prime, true, sizeof(prime)); 
-  
-    for (int p=2; p*p<=n; p++) 
-    { 
-        // If prime[p] is not changed, then it is a prime 
-        if (prime[p] == true) 
-        { 
-            // Update all multiples of p greater than or  
-            // equal to the square of it 
-            // numbers which are multiple of p and are 
-            // less than p^2 are already been marked.  
-            for (int i=p*p; i<=n; i += p) 
-                prime[i] = false; 
-        } 
-    } 
-  
-    // Print all prime numbers 
-    for (int p=2; p<=n; p++) 
-       if (prime[p]) 
-          cout << p << " "; 
-} 
-
 // Euler's Totient Function using Sieve of Eratosthenes
-ll phi(ll n) 
-{ 
+ll phi(ll n) { 
     ll res = n; 
-  
     // this loop runs sqrt(n / ln(n)) times 
-    for (ll i=0; p[i]*p[i] <= n; i++) 
-    { 
-        if (n % p[i]== 0) 
-        { 
+    for (ll i=0; p[i]*p[i] <= n; i++) { 
+        if (n % p[i]== 0) { 
             // subtract multiples of p[i] from r 
             res -= (res / p[i]); 
-  
             // Remove all occurrences of p[i] in n 
-            while (n % p[i]== 0) 
-               n /= p[i]; 
+            while (n % p[i]== 0)  n /= p[i]; 
         } 
     } 
-  
-    // when n has prime factor greater 
-    // than sqrt(n) 
-    if (n > 1) 
-       res -= (res / n); 
-  
+    // when n has prime factor greater than sqrt(n) 
+    if (n > 1) res -= (res / n); 
     return res; 
 } 
-
 // (FLT) pow(a, totient(n)) equivalent 1 (mod n)
-
 int main() {
-	// expected: 2
-	cout << gcd(14, 30) << endl;
-
 	// expected: 2 -2 1
-	int x, y;
-	int g = extended_euclid(14, 30, x, y);
-	cout << g << " " << x << " " << y << endl;
-
+	int x, y; int g = extended_euclid(14, 30, x, y);
+	cout << g << " " << x << " " << y << endl;	
 	// expected: 95 451
 	VI sols = modular_linear_equation_solver(14, 30, 100);
 	for (int i = 0; i < sols.size(); i++) cout << sols[i] << " ";
 	cout << endl;
-
-	// expected: 8
-	cout << mod_inverse(8, 9) << endl;
-
-	// expected: 23 105
-	//           11 12
+	// expected: 23 105 11 12
 	PII ret = chinese_remainder_theorem(VI({ 3, 5, 7 }), VI({ 2, 3, 2 }));
 	cout << ret.first << " " << ret.second << endl;
 	ret = chinese_remainder_theorem(VI({ 4, 6 }), VI({ 3, 5 }));
 	cout << ret.first << " " << ret.second << endl;
-
 	// expected: 5 -15
 	if (!linear_diophantine(7, 2, 5, x, y)) cout << "ERROR" << endl;
 	cout << x << " " << y << endl;
-	
 	// expected: 6
 	cout << nCrModpLucas(10, 2, 13) << endl;
-	
 	return 0;
 }
