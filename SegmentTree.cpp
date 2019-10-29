@@ -2,95 +2,97 @@
 
 using namespace std;
 
-long long t,n,m,a[100005],q,x,y,tree[4*100005],lazy[4*100005],st,en;
+long long n, a[200010], q, tree[4 * 200010], lazy[4 * 200010], inf = 1e18 + 10, lf, rg, v;
 
-void build(long long now, long long l, long long r)
-{
-    if(l==r)
-    {
-        tree[now]=a[l];
-        return;
-    }
-    long long m=(l+r)/2;
-    build(now*2,l,m);
-    build(now*2+1,m+1,r);
-    tree[now]=tree[now*2]+tree[now*2+1];
-}
-
-void update_range(long long now, long long l, long long r, long long s, long long e, long long val)
-{
-    if(lazy[now]!=0)
-    {
-        tree[now]+=(r-l+1)*lazy[now];
-        if(l!=r)
-        {
-            lazy[now*2]+=lazy[now];
-            lazy[now*2+1]+=lazy[now];
-        }
-        lazy[now]=0;
-    }
-    if(r<s || e<l)
-        return;
-    if(s<=l && r<=e)
-    {
-        tree[now] += (r-l+1)*val;
-        if(l!=r)
-        {
-            lazy[now*2] += val;
-            lazy[now*2+1] += val;
-        }
-        return;
-    }
-    long long m=(l+r)/2;
-    update_range(now*2,l,m,s,e,val);
-    update_range(now*2+1,m+1,r,s,e,val);
-    tree[now]=tree[now*2]+tree[now*2+1];
-}
-
-long long query_range(long long now, long long l, long long r, long long x, long long y)
-{
-    if(y<l || r<x)
-        return 0;
-    if(lazy[now]!=0)
-    {
-        tree[now]+=(r-l+1)*lazy[now];
-        if(l!=r)
-        {
-            lazy[now*2]+=lazy[now];
-            lazy[now*2+1]+=lazy[now];
-        }
-        lazy[now]=0;
-    }
-    if(x<=l && r<=y)
-        return tree[now];
-    long long m=(l+r)/2;
-    return query_range(now*2,l,m,x,y)+query_range(now*2+1,m+1,r,x,y);
-}
-
-int main()
-{
-	ios_base::sync_with_stdio(false);
-	cin.tie(NULL); cout.tie(NULL);
-	cin>>t;
-	for(long long asdf=1;asdf<=t;asdf++) {	
-		memset(lazy,0,sizeof(lazy));
-		memset(tree,0,sizeof(tree));
-		memset(a,0,sizeof(a));
-	    cin>>n>>m;
-	    build(1,1,n);
-	    for(long long i=0;i<m;i++)
-	    {
-	        cin>>q;
-	        if(q==1)
-	        {
-	            cin>>x>>y;
-	            cout<<query_range(1,1,n,x,y)<<endl;
-	        }
-	        else if(q==0)
-	        {
-	            cin>>st>>en>>y;
-	            update_range(1,1,n,st,en,y);
-	        }
-	    }
+void build(int now, int l, int r) {
+	if(l == r) {
+		tree[now] = a[l];
+		
+		return;
 	}
+	int m = (l + r) / 2;
+	build(now * 2, l, m);
+	build(now * 2 + 1, m + 1, r);
+	tree[now] = min(tree[now * 2], tree[now * 2 + 1]);
+}
+
+void update(int now, int l, int r, int st, int en, int val) {
+	if(lazy[now] != 0) {
+		tree[now] += lazy[now];
+        if(l!=r) {
+            lazy[now * 2] += lazy[now];
+            lazy[now * 2 + 1] += lazy[now];
+        }
+        lazy[now] = 0;
+	}
+	if(en < l || r < st) {
+		return;
+	}
+	if(st <= l && r <= en){
+        tree[now] += val;
+        if(l != r){
+            lazy[now * 2] += val;
+            lazy[now * 2 + 1] += val;
+        }
+        return;
+    }
+    int m = (l + r) / 2;
+    update(now * 2, l, m, st, en, val);
+    update(now * 2 + 1, m + 1, r, st, en, val);
+    tree[now] = min(tree[now * 2], tree[now * 2 + 1]);
+}
+
+long long query(int now, int l, int r, int st, int en) {
+	if(en < l || r < st) {
+		return inf;
+	}
+	if(lazy[now] != 0) {
+		tree[now] += lazy[now];
+        if(l!=r) {
+            lazy[now * 2] += lazy[now];
+            lazy[now * 2 + 1] += lazy[now];
+        }
+        lazy[now] = 0;
+	}
+	if(st <= l && r <= en) {
+		return tree[now];
+	}
+	int m = (l + r) / 2;
+    return min(query(now * 2, l, m, st, en), query(now * 2 + 1, m + 1, r, st, en));
+}
+
+int main() {
+	ios_base :: sync_with_stdio(false);
+	cin.tie(NULL); cout.tie(NULL);
+	memset(lazy, 0, sizeof(lazy));
+	cin >> n;
+	for(int i = 1; i <= n; i++) {
+		cin >> a[i];
+	}
+	build(1, 1, n);
+	cin >> q;
+	for(int i = 1; i <= q; i++) {
+		cin >> lf >> rg;
+		lf++;
+		rg++;
+		if(cin.get() == 10) {
+			if(lf <= rg) {
+				cout << query(1, 1, n, lf, rg) << endl;
+			}
+			else {
+				cout << min(query(1, 1, n, lf, n), query(1, 1, n, 1, rg)) << endl;
+			}
+		}
+		else {
+			cin >> v;
+			if(lf <= rg) {
+				update(1, 1, n, lf, rg, v);
+			}
+			else {
+				update(1, 1, n, lf, n, v);
+				update(1, 1, n, 1, rg, v);
+			}
+		}
+	}
+	return 0;
 }
