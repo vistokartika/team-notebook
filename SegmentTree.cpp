@@ -1,7 +1,6 @@
 //Segment Tree + Lazy Propagation for RMQ with additional updates
 
 #include <bits/stdc++.h>
-
 using namespace std;
 
 long long n, a[200010], q, tree[4 * 200010], lazy[4 * 200010], inf = 1e18 + 10, lf, rg, v;
@@ -9,7 +8,6 @@ long long n, a[200010], q, tree[4 * 200010], lazy[4 * 200010], inf = 1e18 + 10, 
 void build(int now, int l, int r) {
 	if(l == r) {
 		tree[now] = a[l];
-		
 		return;
 	}
 	int m = (l + r) / 2;
@@ -19,6 +17,7 @@ void build(int now, int l, int r) {
 }
 
 void update(int now, int l, int r, int st, int en, int val) {
+	// drop down
 	if(lazy[now] != 0) {
 		tree[now] += lazy[now];
         if(l!=r) {
@@ -30,6 +29,7 @@ void update(int now, int l, int r, int st, int en, int val) {
 	if(en < l || r < st) {
 		return;
 	}
+	//initialize drop down
 	if(st <= l && r <= en){
         tree[now] += val;
         if(l != r){
@@ -48,6 +48,7 @@ long long query(int now, int l, int r, int st, int en) {
 	if(en < l || r < st) {
 		return inf;
 	}
+	//drop down
 	if(lazy[now] != 0) {
 		tree[now] += lazy[now];
         if(l!=r) {
