@@ -1,3 +1,5 @@
+//Segment Tree + Lazy Propagation for RMQ with additional updates
+
 #include <bits/stdc++.h>
 
 using namespace std;
