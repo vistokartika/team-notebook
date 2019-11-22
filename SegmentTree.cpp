@@ -15,7 +15,7 @@ void init(int now, int l, int r, int val) {
     }
 }
 
-void drop_down(int now, int l, int r) {
+void dropdown(int now, int l, int r) {
 	if(lazy[now] != 0) {
 		tree[now] += (r - l + 1) * lazy[now];
         if(l!=r) {
@@ -38,7 +38,7 @@ void build(int now, int l, int r) {
 }
 
 void update(int now, int l, int r, int st, int en, int val) {
-	drop_down(now, l, r);
+	dropdown(now, l, r);
 	if(en < l || r < st) {
 		return;
 	}
@@ -56,7 +56,7 @@ int query(int now, int l, int r, int st, int en) {
 	if(en < l || r < st) {
 		return 0;
 	}
-	drop_down(now, l, r);
+	dropdown(now, l, r);
 	if(st <= l && r <= en) {
 		return tree[now];
 	}
