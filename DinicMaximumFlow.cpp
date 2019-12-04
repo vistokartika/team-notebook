@@ -1,65 +1,58 @@
 #include <bits/stdc++.h>
 using namespace std;
-
-typedef long long ll;
-
-const int MSIZE = 505;
+const int msz = 5005;
 
 struct Edges{
 	int u, v;
-	ll cap, flow;
-	
+	long long cap, flow;
 	Edges(){}
-	Edges(int u, int v, ll cap): u(u), v(v), cap(cap), flow(0) {}
+	Edges(int u, int v, long long cap): u(u), v(v), cap(cap), flow(0) {}
 };
 
 vector<Edges> edgelist;
-vector<int> adjlist[MSIZE];
-int depth[MSIZE], pt[MSIZE], n, m, s, t, u, v, c, cnt = 0;
+vector<int> adjlist[msz];
+int depth[msz], pt[msz], n, m;
 
-void addedge(int u, int v, ll cap){
+void addedge(int u, int v, long long cap){
 	Edges A(u, v, cap);
 	edgelist.push_back(A);
-	adjlist[u].push_back(edgelist.size()-1);
+	adjlist[u].push_back(edgelist.size() - 1);
 	Edges B(v, u, 0);
 	edgelist.push_back(B);
-	adjlist[v].push_back(edgelist.size()-1);
+	adjlist[v].push_back(edgelist.size() - 1);
 }
 
 bool bfs(int s, int t){
-	fill(depth, depth+MSIZE, 100000);
-	depth[s] = 0;
+	fill(depth, depth + msz, msz);
 	queue<int> q;
 	q.push(s);
-	int front, sz;
-	Edges a;
+	depth[s] = 0;
 	while(q.empty() == false){
-		front = q.front();
+		int front = q.front();
 		q.pop();
-		if(front == t)
-			break;
-		sz = adjlist[front].size();
+		if(front == t) break;
+		int sz = adjlist[front].size();
 		for(int i = 0; i < sz; i++){
-			a = edgelist[adjlist[front][i]];
+			Edges a = edgelist[adjlist[front][i]];
 			if(a.flow < a.cap && depth[a.v] > depth[a.u] + 1){
 				depth[a.v] = depth[a.u] + 1;
 				q.push(a.v);
 			}
 		}
 	}
-	return depth[t] != 100000;
+	return depth[t] != msz;
 }
 
-ll dfs(int s, int t, ll flow = -1){
+long long dfs(int s, int t, long long flow = -1){
 	if(s == t || flow == 0){
 		return flow;
 	}
-	ll push, augment;
+	int push, augment;
 	int sz = adjlist[s].size();
 	for(int &i = pt[s]; i < sz; i++){
 		Edges &front = edgelist[adjlist[s][i]];
 		Edges &back = edgelist[adjlist[s][i]^1];
-		if(depth[front.v] == depth[front.u]+1){
+		if(depth[front.v] == depth[front.u] + 1){
 			augment = front.cap-front.flow;
 			if(augment > flow && flow != -1){
 				augment = flow;
@@ -77,29 +70,21 @@ ll dfs(int s, int t, ll flow = -1){
 long long dinic(long long s, long long t) {
 	long long ret = 0;
 	while(bfs(s, t)) {
-		fill(pt, pt+MSIZE, 0);
-		ret += dfs(s, t);
+		fill(pt, pt + msz, 0);
+		while(long long flow = dfs(s, t))
+			ret += flow;
 	}
 	return ret;
 }
 
 int main(){
-	cin>>n>>m>>s>>t;
-	for(int i=0;i<m;i++) {
-		cin>>u>>v>>c;
+	cin >> n >> m;
+	for(long long i=0;i<m;i++) {
+		int u, v, c;
+		cin >> u >> v >> c;
 		addedge(u, v, c);
+		addedge(v, u, c);
 	}
-	long long ans = dinic(s, t);
-	for(int i=0;i<edgelist.size();i++) {
-		if(edgelist[i].flow>0) {
-			cnt++;
-		}
-	}
-	cout<<n<<" "<<ans<<" "<<cnt<<endl;
-	for(int i=0;i<edgelist.size();i++) {
-		if(edgelist[i].flow>0) {
-			cout<<edgelist[i].u<<" "<<edgelist[i].v<<" "<<edgelist[i].flow<<endl;
-		}
-	}
+    cout << dinic(1, n) <<endl;
 	return 0;
 }
