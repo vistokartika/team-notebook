@@ -1,2 +1,2 @@
-# Team-Notebook
+# team-notebook
 ACM ICPC Team Notebook
