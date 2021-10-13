@@ -1,2 +1,2 @@
-# 3NewFreshMen Team Notebook
-ACM ICPC team notebook for 3NewFreshMen
+# ACM ICPC Team Notebook
+ACM ICPC Team Notebook
